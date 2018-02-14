@@ -1,0 +1,29 @@
+{
+
+  "manifest_version": 2,
+  "name": "MacTrelly",
+  "version": "1.0.1",
+
+  "description": "Turns a trello card into a Jira card for tracking Kanban teams through Jira.",
+
+  "icons": {
+    "48": "icons/mactrelly.svg",
+    "96": "icons/mactrelly.svg"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.trello.com/*"],
+      "js": ["mactrelly.js"]
+    }
+  ],
+
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "permissions": [
+    "<all_urls>",
+    "storage" 
+  ]
+}

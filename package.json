@@ -1,0 +1,28 @@
+{
+  "name": "mactrelly",
+  "version": "0.0.1",
+  "description": "",
+  "main": "mactrelly.js",
+  "scripts": {
+    "build": "NODE_ENV=production rollup -c",
+    "build:watch": "npm run -s build -- --watch",
+    "start:dev": "web-ext run",
+    "package": "npm run -s build && web-ext build --ignore-files ./src ./rollup.config.js package*.json",
+    "package:sign": "npm run -s build && web-ext sign --ignore-files ./src ./rollup.config.js",
+    "lint": "web-ext lint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "prettier": "^1.10.2",
+    "rollup": "^0.55.5",
+    "rollup-plugin-commonjs": "^8.3.0",
+    "rollup-plugin-node-resolve": "^3.0.2",
+    "rollup-plugin-uglify": "^3.0.0",
+    "web-ext": "^2.4.0"
+  }
+}

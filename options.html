@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MacTrelly</title>
+  <style>
+    * {
+      font-family: Arial, Helvetica, sans-serif;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      font-weight: 300;
+    }
+
+    .logo-wrap {
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-block;
+      margin-top: 80px;
+      text-align: center;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 40px;
+    }
+
+    .logo img {
+      width: 100%;
+    }
+
+    .container {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .options .title {
+      text-align: center;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .input-group input, .input-group textarea {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      border: 1px solid #aaa;
+      font-size: 18px;
+      border-radius: 3px;
+    }
+
+    .input-group:not(:first-child) {
+      margin-top: 20px;
+    }
+
+    #jiraFieldDefaults {
+      font-family: monospace;
+    }
+
+    #jiraFieldDefaults[data-invalid="true"] {
+      border-color: red;
+      background: #fdd;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="options">
+      <div class="options">
+        <div class="input-group">
+          <label for="jiraUrl">Jira URL</label>
+          <input type="text" id="jiraUrl" name="jiraUrl" placeholder="https://jira.example.com/" />
+        </div>
+        <div class="input-group">
+          <label for="jiraFieldDefaults">Jira Ticket Defaults: JSON</label>
+          <textarea name="jiraFieldDefaults" id="jiraFieldDefaults" rows="15" placeholder="{ &quot;foo&quot;: &quot;bar&quot; }"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
