@@ -1,4 +1,4 @@
-const optionsInputs = ["jiraUrl", "jiraFieldDefaults"];
+const optionsInputs = ["jiraUrl", "jiraFieldDefaults","jiraEpics"];
 
 async function loadInputs() {
   const values = await browser.storage.local.get(optionsInputs);
