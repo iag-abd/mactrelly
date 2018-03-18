@@ -19,10 +19,12 @@ async function loadInputs() {
           input.dataset.invalid = true;
         }
       }
-
       save(id, event.target.value);
     });
-  });
+
+
+
+  }); // end for each
 }
 
 function save(optionName, value) {

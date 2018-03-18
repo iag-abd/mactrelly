@@ -31,6 +31,7 @@ export function getSession() {
 }
 
 export async function createIssue(summary, description) {
+  console.log("hi");
   const session = await getSession();
   const settings = await browser.storage.local.get();
 

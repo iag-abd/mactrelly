@@ -15,25 +15,39 @@ function prependEpicSelect(epics) {
   );
 
   var select = '<select id="mactrelly-jira-selector" style="width: 154px;height: 29px;overflow: hidden; background-color: #0079bf; color: white; border-radius: 5px; padding: 2px 10px; box-shadow: 1px 1px 11px #330033; ">';
-  for (var key in epics) {
+  for (const key in epics) {
     select = select + (`<option value="${epics[key]}">${epics[key]} | ${key}</option>`)
   }
 
-  var select = select + '</select>]';
+  select = select + '</select>]';
 
   actionsList2.innerHTML = select + actionsList2.innerHTML;
 }
 
+function httpGet(theUrl)
+{
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+function getCardMatches (url) {
+  const regex = /\/c\/([\w]*)\/(.*)/
+
+  return url.match(regex)
+}
+
+
 router.listen(async (path) => {
   const settings = await browser.storage.local.get();
-  try {
 
     if (!settings.jiraUrl) {
       console.warn("Jira not configured")
       throw new Error("You must specify a url to your Jira instance");
     }
 
-    var epics;
+    var epics = {};
 
     if (settings.jiraEpics) {
       epics = JSON.parse(settings.jiraEpics);
@@ -41,39 +55,56 @@ router.listen(async (path) => {
 
     switch (true) {
       case path.startsWith("/c/"): {
-        console.log(path)
+      //console.log(path)
 
-        if (!(typeof epics === 'undefined' || epics === null)) prependEpicSelect(epics);
+      if (epics) prependEpicSelect(epics);
 
-        prependActionButton(
-          TicketButton({ text: "Send To Jira" }, async () => {
-            const title = document.querySelector(".card-detail-title-assist")
-              .textContent;
+      prependActionButton(
+        TicketButton({ text: "Send To Jira" }, async () => {
+          const matches = getCardMatches(path);
+          const longPath = `https://trello.com${path}`
 
-            const description = document.querySelector(
-              ".js-card-desc.current.markeddown"
-            ).innerHTML;
+          const cardID = matches[1];
+          const cardFullName = matches[2];
 
-            console.log("title")
-            try{
-              const issue = await jira.createIssue(title, description);
-              window.open(`${settings.jiraUrl}/browse/${issue.key}`, "_blank");
-            }
-            catch(error) {
-              console.warn(err.message);
-            }
-          })
-        );
+          const url = `https://trello.com/1/cards/${cardID}`;
+          const card = JSON.parse(httpGet(url));
 
-        //if (!(typeof epics === 'undefined' || epics === null)) prependEpicSelect(epics);
+          var cardDesc = card.desc;
+          if (!cardDesc) {
+            cardDesc = card.name;
+          }
 
-        break;
-      }
-      default:
-        console.info("No route matched");
-    }
-  }
-  catch(err) {
-    console.warn(err.message);
+          const cardShortName = card.name;
+          var jiraDescription = cardDesc;
+
+          var epic = "";
+          if (epics) {
+            const e = document.getElementById("mactrelly-jira-selector");
+            epic = e.options[e.selectedIndex].value;
+            jiraDescription = `${jiraDescription} :: relates to ${epic}`
+          }
+
+          jiraDescription = `${jiraDescription} :: trello => ${cardShortName} :: trelloLink => ${longPath}`;
+
+          try{
+            console.log(`do jira \ncardShortName: ${cardShortName}\njiraDescription: ${jiraDescription}\nepic: ${epic}\ncardID: ${cardID}\ncardDesc: ${cardDesc}`);
+            console.log('fingers crossed');
+            const issue = await jira.createIssue(cardShortName, jiraDescription);
+            window.open(`${settings.jiraUrl}/browse/${issue.key}`, "_blank");
+            // cardID, cardDesc, issue
+            //log issue to card description
+            //add comment to card
+          }
+          catch(error) {
+            console.warn(err.message);
+          }
+        })
+      );
+
+      break;
+    } //end case /c/
+    default:
+      console.info("No route matched");
   }
 });
