@@ -61,7 +61,7 @@ export async function createIssue(summary, description, epic) {
     //var data2 = {type: {name:"Blocks"}, inwardIssue: {key:issue.key}, outwardIssue: {key:epic}};
       var data2 = {
             "type": {
-                "name": "Duplicate"
+                "name": "Delivers"
             },
             "inwardIssue": {
                 "key": issue.key
