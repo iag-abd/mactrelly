@@ -3,6 +3,8 @@ async function api(path, options = {}, base = "api/2") {
 
   const url = `${settings.jiraUrl}/rest/${base}/${path}`;
 
+  console.log(url);
+
   return fetch(
     url,
     Object.assign(options, {
@@ -30,13 +32,12 @@ export function getSession() {
   return api(`session`, {}, "auth/1");
 }
 
-export async function createIssue(summary, description) {
-  console.log("hi");
+export async function createIssue(summary, description, epic) {
   const session = await getSession();
   const settings = await browser.storage.local.get();
 
   try {
-    const issue = await post("issue", {
+    const data = {
       fields: Object.assign(
         {
           summary,
@@ -47,7 +48,39 @@ export async function createIssue(summary, description) {
         },
         JSON.parse(settings.jiraFieldDefaults)
       )
-    });
+    };
+
+    console.log(data);
+    console.log(data.fields.summary);
+    console.log(data.fields.description);
+
+    const issue = await post("issue", data);
+
+    //https://jira.instance.com/rest/api/2/issueLink -X POST --data '{"type":{"name":"Related Incident"},"inwardIssue":{"key":"ISS-123"},"outwardIssue":{"key":"SYS-456"}}'
+    try{
+    //var data2 = {type: {name:"Blocks"}, inwardIssue: {key:issue.key}, outwardIssue: {key:epic}};
+      var data2 = {
+            "type": {
+                "name": "Duplicate"
+            },
+            "inwardIssue": {
+                "key": issue.key
+            },
+            "outwardIssue": {
+                "key": epic
+            },
+            "comment": {
+                "body": "Linked related issue!"
+            }
+        };
+
+
+      var x = await post("issueLink", data2);
+    }
+    catch (error) {
+      console.error(error);
+    }
+
     return issue;
   } catch (error) {
     console.error("Error creating the ticket", error);

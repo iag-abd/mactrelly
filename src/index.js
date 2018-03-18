@@ -15,7 +15,7 @@ function prependEpicSelect(epics) {
   );
 
   var select = '<select id="mactrelly-jira-selector" style="width: 154px;height: 29px;overflow: hidden; background-color: #0079bf; color: white; border-radius: 5px; padding: 2px 10px; box-shadow: 1px 1px 11px #330033; ">';
-  for (const key in epics) {
+  for (var key in epics) {
     select = select + (`<option value="${epics[key]}">${epics[key]} | ${key}</option>`)
   }
 
@@ -90,7 +90,7 @@ router.listen(async (path) => {
           try{
             console.log(`do jira \ncardShortName: ${cardShortName}\njiraDescription: ${jiraDescription}\nepic: ${epic}\ncardID: ${cardID}\ncardDesc: ${cardDesc}`);
             console.log('fingers crossed');
-            const issue = await jira.createIssue(cardShortName, jiraDescription);
+            const issue = await jira.createIssue(cardShortName, jiraDescription, epic);
             window.open(`${settings.jiraUrl}/browse/${issue.key}`, "_blank");
             // cardID, cardDesc, issue
             //log issue to card description
