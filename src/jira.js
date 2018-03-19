@@ -50,36 +50,34 @@ export async function createIssue(summary, description, epic) {
       )
     };
 
-    console.log(data);
-    console.log(data.fields.summary);
-    console.log(data.fields.description);
-
     const issue = await post("issue", data);
 
-    //https://jira.instance.com/rest/api/2/issueLink -X POST --data '{"type":{"name":"Related Incident"},"inwardIssue":{"key":"ISS-123"},"outwardIssue":{"key":"SYS-456"}}'
-    try{
-    //var data2 = {type: {name:"Blocks"}, inwardIssue: {key:issue.key}, outwardIssue: {key:epic}};
-      var data2 = {
-            "type": {
-                "name": "Delivers"
-            },
-            "inwardIssue": {
-                "key": issue.key
-            },
-            "outwardIssue": {
-                "key": epic
-            },
-            "comment": {
-                "body": "Linked related issue!"
-            }
-        };
+    if (epic) {
+      try{
+        var data2 = {
+              "type": {
+                  "name": "Blocks"
+              },
+              "inwardIssue": {
+                  "key": issue.key
+              },
+              "outwardIssue": {
+                  "key": epic
+              },
+              "comment": {
+                  "body": "Linked related issue!"
+              }
+          };
 
 
-      var x = await post("issueLink", data2);
+        var x = await post("issueLink", data2);
+      }
+      catch (error) {
+        console.error(error);
+      }
     }
-    catch (error) {
-      console.error(error);
-    }
+
+    //TODO: add comment to epic
 
     return issue;
   } catch (error) {

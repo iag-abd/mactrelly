@@ -34,10 +34,22 @@ function httpGet(theUrl)
 
 function getCardMatches (url) {
   const regex = /\/c\/([\w]*)\/(.*)/
-
   return url.match(regex)
 }
 
+function updateDescriptionOfCard(card, desc, apiKey, apiToken) {
+  var putString = `https://api.trello.com/1/cards/${card}?desc=${encodeURI(desc)}&token=${apiToken}&key=${apiKey}`;
+  console.log(putString);
+  const data = null;
+  const xhr = new XMLHttpRequest();
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === this.DONE) {
+      console.log(this.responseText);
+    }
+  });
+  xhr.open("PUT", putString);
+  xhr.send(data);
+}
 
 router.listen(async (path) => {
   const settings = await browser.storage.local.get();
@@ -52,6 +64,9 @@ router.listen(async (path) => {
     if (settings.jiraEpics) {
       epics = JSON.parse(settings.jiraEpics);
     }
+
+    var apiKey = settings.apiKey;
+    var apiToken = settings.apiToken;
 
     switch (true) {
       case path.startsWith("/c/"): {
@@ -88,13 +103,17 @@ router.listen(async (path) => {
           jiraDescription = `${jiraDescription} :: trello => ${cardShortName} :: trelloLink => ${longPath}`;
 
           try{
-            console.log(`do jira \ncardShortName: ${cardShortName}\njiraDescription: ${jiraDescription}\nepic: ${epic}\ncardID: ${cardID}\ncardDesc: ${cardDesc}`);
-            console.log('fingers crossed');
+            //console.log(`do jira \ncardShortName: ${cardShortName}\njiraDescription: ${jiraDescription}\nepic: ${epic}\ncardID: ${cardID}\ncardDesc: ${cardDesc}`);
             const issue = await jira.createIssue(cardShortName, jiraDescription, epic);
             window.open(`${settings.jiraUrl}/browse/${issue.key}`, "_blank");
-            // cardID, cardDesc, issue
-            //log issue to card description
-            //add comment to card
+            const newDescription = `${cardDesc} ${settings.jiraUrl}/browse/${issue.key}`;
+
+            if (apiKey && apiToken) {
+              updateDescriptionOfCard(cardID, newDescription, apiKey, apiToken);
+            }
+
+
+
           }
           catch(error) {
             console.warn(err.message);
