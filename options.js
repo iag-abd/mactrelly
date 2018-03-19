@@ -1,4 +1,4 @@
-const optionsInputs = ["jiraUrl", "jiraFieldDefaults"];
+const optionsInputs = ["jiraUrl", "jiraFieldDefaults","jiraEpics", "apiKey", "apiToken"];
 
 async function loadInputs() {
   const values = await browser.storage.local.get(optionsInputs);
@@ -19,10 +19,12 @@ async function loadInputs() {
           input.dataset.invalid = true;
         }
       }
-
       save(id, event.target.value);
     });
-  });
+
+
+
+  }); // end for each
 }
 
 function save(optionName, value) {

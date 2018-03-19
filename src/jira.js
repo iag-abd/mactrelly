@@ -3,6 +3,8 @@ async function api(path, options = {}, base = "api/2") {
 
   const url = `${settings.jiraUrl}/rest/${base}/${path}`;
 
+  console.log(url);
+
   return fetch(
     url,
     Object.assign(options, {
@@ -30,12 +32,12 @@ export function getSession() {
   return api(`session`, {}, "auth/1");
 }
 
-export async function createIssue(summary, description) {
+export async function createIssue(summary, description, epic) {
   const session = await getSession();
   const settings = await browser.storage.local.get();
 
   try {
-    const issue = await post("issue", {
+    const data = {
       fields: Object.assign(
         {
           summary,
@@ -46,7 +48,37 @@ export async function createIssue(summary, description) {
         },
         JSON.parse(settings.jiraFieldDefaults)
       )
-    });
+    };
+
+    const issue = await post("issue", data);
+
+    if (epic) {
+      try{
+        var data2 = {
+              "type": {
+                  "name": "Blocks"
+              },
+              "inwardIssue": {
+                  "key": issue.key
+              },
+              "outwardIssue": {
+                  "key": epic
+              },
+              "comment": {
+                  "body": "Linked related issue!"
+              }
+          };
+
+
+        var x = await post("issueLink", data2);
+      }
+      catch (error) {
+        console.error(error);
+      }
+    }
+
+    //TODO: add comment to epic
+
     return issue;
   } catch (error) {
     console.error("Error creating the ticket", error);
