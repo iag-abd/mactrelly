@@ -3,8 +3,6 @@ async function api(path, options = {}, base = "api/2") {
 
   const url = `${settings.jiraUrl}/rest/${base}/${path}`;
 
-  console.log(url);
-
   return fetch(
     url,
     Object.assign(options, {
@@ -55,22 +53,21 @@ export async function createIssue(summary, description, epic) {
     if (epic) {
       try{
         var data2 = {
-              "type": {
-                  "name": "Blocks"
+              type: {
+                  name: "Blocks"
               },
-              "inwardIssue": {
-                  "key": issue.key
+              inwardIssue: {
+                  key: issue.key
               },
-              "outwardIssue": {
-                  "key": epic
+              outwardIssue: {
+                  key: epic
               },
-              "comment": {
-                  "body": "Linked related issue!"
+              comment: {
+                  body: "Linked related issue!"
               }
           };
 
-
-        var x = await post("issueLink", data2);
+        await post("issueLink", data2);
       }
       catch (error) {
         console.error(error);

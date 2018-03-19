@@ -18,37 +18,36 @@ function prependEpicSelect(epics) {
   for (var key in epics) {
     select = select + (`<option value="${epics[key]}">${epics[key]} | ${key}</option>`)
   }
-
   select = select + '</select>]';
 
   actionsList2.innerHTML = select + actionsList2.innerHTML;
 }
 
-function httpGet(theUrl)
-{
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
+function httpGet(theUrl) {
+  const xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+  xmlHttp.send( null );
+  return xmlHttp.responseText;
 }
 
 function getCardMatches (url) {
   const regex = /\/c\/([\w]*)\/(.*)/
-  return url.match(regex)
+  const matches = url.match(regex);
+  const map = {cardID: matches[1], cardFullName: matches[2]};
+  return map;
 }
 
 function updateDescriptionOfCard(card, desc, apiKey, apiToken) {
   var putString = `https://api.trello.com/1/cards/${card}?desc=${encodeURI(desc)}&token=${apiToken}&key=${apiKey}`;
   console.log(putString);
-  const data = null;
-  const xhr = new XMLHttpRequest();
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === this.DONE) {
-      console.log(this.responseText);
-    }
-  });
-  xhr.open("PUT", putString);
-  xhr.send(data);
+  //putURL(url);
+  fetch(putString, {
+    cache: 'no-cache',
+    method: 'PUT'
+  })
+  .then(response => response.json())
+  .catch(error => console.error('Error:', error))
+  .then(response => console.log('Success:', response));
 }
 
 router.listen(async (path) => {
@@ -70,7 +69,6 @@ router.listen(async (path) => {
 
     switch (true) {
       case path.startsWith("/c/"): {
-      //console.log(path)
 
       if (epics) prependEpicSelect(epics);
 
@@ -79,19 +77,16 @@ router.listen(async (path) => {
           const matches = getCardMatches(path);
           const longPath = `https://trello.com${path}`
 
-          const cardID = matches[1];
-          const cardFullName = matches[2];
+          const cardID = matches.cardID;
+          const cardFullName = matches.cardFullName;
 
           const url = `https://trello.com/1/cards/${cardID}`;
           const card = JSON.parse(httpGet(url));
 
-          var cardDesc = card.desc;
-          if (!cardDesc) {
-            cardDesc = card.name;
-          }
+          var cardDesc = card.desc || card.name;
 
           const cardShortName = card.name;
-          var jiraDescription = cardDesc;
+          let jiraDescription = cardDesc;
 
           var epic = "";
           if (epics) {
@@ -111,8 +106,6 @@ router.listen(async (path) => {
             if (apiKey && apiToken) {
               updateDescriptionOfCard(cardID, newDescription, apiKey, apiToken);
             }
-
-
 
           }
           catch(error) {
