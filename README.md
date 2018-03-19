@@ -11,10 +11,16 @@ set values for
 1. Jira Url - The url to your jira instance. This should be in the format
 `http://jira.company.com`.
 
-2. Jira Field Defaults - This should be a JSON object that gets "spread" into
+2. API Key - the Trello API key if you want the Trello description updated.  Leave blank if you don't
+
+3. API Token
+
+4. Jira Field Defaults - This should be a JSON object that gets "spread" into
 the fields object when [creating an
 issue](https://docs.atlassian.com/software/jira/docs/api/REST/latest/#api/2/issue-createIssue)
 in Jira.
+
+5. Epics - JSON with issue.key: description to provide a list of top level cards to link to
 
 
 ### To build...
@@ -33,3 +39,5 @@ npm run package:sign -- --api-key <JWT issuer> --api-secret <JWT secret>
 A .xpi file will be create in the `web-ext-artifacts` folder. You can then
 install this in Firefox manually by dragging the file into an open Firefox
 window.
+
+###
