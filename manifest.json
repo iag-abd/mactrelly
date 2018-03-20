@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "MacTrelly",
-  "version": "1.0.1",
+  "version": "1.0.17",
 
   "description": "Turns a trello card into a Jira card for tracking Kanban teams through Jira.",
 
@@ -24,6 +24,6 @@
 
   "permissions": [
     "<all_urls>",
-    "storage" 
+    "storage"
   ]
 }
